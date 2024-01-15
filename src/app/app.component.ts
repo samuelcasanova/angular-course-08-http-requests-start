@@ -12,6 +12,7 @@ import { PostService } from './post.service';
 export class AppComponent implements OnInit {
   loadedPosts: Post[] = [];
   isLoading: boolean = false;
+  error: string | null = null
 
   constructor(private http: HttpClient, private postService: PostService) {}
 
@@ -20,21 +21,34 @@ export class AppComponent implements OnInit {
   }
 
   onCreatePost(post: Post) {
-    this.postService.storePost(post)
+    this.postService.storePost(post).subscribe(() => {
+      console.log('Post created:', post)
+    }, error => {
+      this.handleError(error)
+    })
   }
-
+  
   onFetchPosts() {
     this.isLoading = true
     this.postService.fetchPosts().subscribe(posts => {
       console.log(posts)
       this.loadedPosts = posts
       this.isLoading = false
+    }, error => {
+      this.handleError(error)
     })
   }
-
+  
   onClearPosts() {
     this.postService.deletePosts().subscribe(() => {
       this.loadedPosts = []
+    }, error => {
+      this.handleError(error)
     })
+  }
+  
+  handleError(error: Error) {
+    console.error(error)
+    this.error = error.message
   }
 }

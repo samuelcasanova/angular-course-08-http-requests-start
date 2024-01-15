@@ -11,10 +11,7 @@ export class PostService {
   constructor(private http: HttpClient) {}
 
   storePost(post: Post) {
-    this.http.post(POST_API_URL, post)
-    .subscribe((responseData: { name: string }) => {
-      console.log('Post stored: ', responseData);
-    })
+    return this.http.post(POST_API_URL, post)
   }
 
   fetchPosts(): Observable<Post[]> {

@@ -51,7 +51,7 @@
   </div>
   <div class="row">
     <div class="col-xs-12 col-md-6 col-md-offset-3">
-      <p *ngIf="isLoading">Loading...</p>
+      <p *ngIf="isLoading && !error">Loading...</p>
       <p *ngIf="loadedPosts.length === 0 && !isLoading">No posts available!</p>
       <ul class="list-group" *ngIf="loadedPosts.length > 0 && !isLoading">
         <li class="list-group-item" *ngFor="let post of loadedPosts">
@@ -59,6 +59,7 @@
           <p>{{ post.content }}</p>
         </li>
       </ul>
+      <p class="alert alert-danger" *ngIf="error">{{ error }}</p>
     </div>
   </div>
 </div>
