@@ -1,6 +1,6 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, Subject } from "rxjs";
 import { Post } from "./post.model";
 import { map } from "rxjs/operators";
 
@@ -8,23 +8,30 @@ const POST_API_URL = 'https://angular-course-backend-d30cc-default-rtdb.europe-w
 
 @Injectable({ providedIn: 'root' })
 export class PostService {
+  errorSubject: Subject<Error> = new Subject()
   constructor(private http: HttpClient) {}
 
   storePost(post: Post) {
-    return this.http.post(POST_API_URL, post)
+    const postObservable = this.http.post(POST_API_URL, post)
+    postObservable.subscribe(() => {}, error => this.errorSubject.next(error))
+    return postObservable
   }
 
   fetchPosts(): Observable<Post[]> {
-    return this.http.get<{ [key: string]: Post }>(POST_API_URL)
+    const fetchObservable = this.http.get<{ [key: string]: Post; }>(POST_API_URL)
       .pipe(map(responseData => {
         if (responseData === null) {
-          return []
+          return [];
         }
-        return Object.keys(responseData).map(key => ({ id: key, ...responseData[key] }))
-      }))
+        return Object.keys(responseData).map(key => ({ id: key, ...responseData[key] }));
+      }));
+    fetchObservable.subscribe(() => {}, error => this.errorSubject.next(error))
+    return fetchObservable
   }
 
   deletePosts() {
-    return this.http.delete(POST_API_URL)
+    const deleteObservable = this.http.delete(POST_API_URL);
+    deleteObservable.subscribe(() => {}, error => this.errorSubject.next(error))
+    return deleteObservable
   }
 }
