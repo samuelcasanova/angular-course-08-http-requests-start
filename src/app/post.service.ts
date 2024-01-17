@@ -18,7 +18,10 @@ export class PostService {
   }
 
   fetchPosts(): Observable<Post[]> {
-    const fetchObservable = this.http.get<{ [key: string]: Post; }>(POST_API_URL)
+    const fetchObservable = this.http.get<{ [key: string]: Post; }>(POST_API_URL, { 
+        headers: { 'custom-header': 'hello world' },
+        params: { 'print': 'pretty' }
+      })
       .pipe(map(responseData => {
         if (responseData === null) {
           return [];
